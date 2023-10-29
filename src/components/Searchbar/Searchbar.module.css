@@ -37,6 +37,11 @@
   padding-right: 4px;
   margin-left: 15px;
 }
+.formInput:active,
+.formInput:focus {
+  background-color: transparent;
+  outline: none;
+}
 
 .buttonLabel {
   display: inline-flex;
