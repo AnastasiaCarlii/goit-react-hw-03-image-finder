@@ -16,7 +16,6 @@ export default class App extends Component {
     totalImages: 0,
     showModalWindow: false,
     loading: false,
-    // error: null,
   };
 
   componentDidMount() {
