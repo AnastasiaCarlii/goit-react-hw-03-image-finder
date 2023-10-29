@@ -15,7 +15,7 @@ export default class App extends Component {
     totalImages: 0,
     showModalWindow: false,
     loading: false,
-    error: null,
+    // error: null,
   };
 
   componentDidMount() {
@@ -25,7 +25,7 @@ export default class App extends Component {
   componentDidUpdate(_, prevState) {
     const { query, page } = this.state;
     if (prevState.query !== query || prevState.page !== page) {
-      this.setState({ loading: true });
+      this.setState({ loading: true }, this.fetchImages);
     }
   }
 
@@ -34,14 +34,22 @@ export default class App extends Component {
 
     getImages(query, page)
       .then(response => {
-        this.setState(prevState => ({
-          images: [...prevState.images, ...response.images],
-          totalImages: response.totalImages,
-        }));
+        this.setState(prevState => {
+          const uniqueImages = response.images.filter(
+            newImage =>
+              !prevState.images.some(image => image.id === newImage.id)
+          );
+
+          return {
+            images: [...prevState.images, ...uniqueImages],
+            totalImages: response.totalImages,
+            loading: false,
+          };
+        });
       })
       .catch(error => {
         console.error('Something went wrong', error);
-        this.setState({ error: error.message });
+        this.setState({ error: error.message, loading: false });
       });
   };
 

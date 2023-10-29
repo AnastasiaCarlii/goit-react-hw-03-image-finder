@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 
+import { MdImageSearch } from 'react-icons/md';
+
 import css from './Searchbar.module.css';
 
 export default class Searchbar extends Component {
@@ -29,17 +31,18 @@ export default class Searchbar extends Component {
     return (
       <header className={css.searchbar}>
         <form className={css.form} onSubmit={this.handleSubmit}>
-          <button type="submit" class="button">
-            <span className={css.buttonLabel}>Search</span>
+          <button type="submit" className={css.searchButton}>
+            <span className={css.buttonLabel}>
+              <MdImageSearch size={25}></MdImageSearch>
+            </span>
           </button>
 
           <input
             className={css.formInput}
             value={query}
-            class="input"
             type="text"
-            autocomplete="off"
-            autofocus
+            autoComplete="off"
+            autoFocus
             placeholder="Search images and photos"
             onChange={this.handleChange}
           />

@@ -12,7 +12,7 @@ const ImageGallery = ({ images, openModalWindow }) => {
           key={id}
           webformatURL={webformatURL}
           tags={tags}
-          argeImageURL={largeImageURL}
+          largeImageURL={largeImageURL}
           openModalWindow={openModalWindow}
         />
       ))}
