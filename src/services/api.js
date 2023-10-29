@@ -9,7 +9,7 @@ export const getImages = async (query, page) => {
     const { data } = await axios.get(
       `?q=${query}&page=${page}&key=${API_KEY}&image_type=photo&orientation=horizontal&per_page=12`
     );
-    console.log(data);
+    // console.log(data);
 
     const images = data.hits.map(
       ({ id, webformatURL, largeImageURL, tags }) => {
@@ -23,6 +23,7 @@ export const getImages = async (query, page) => {
     );
     return { images, totalImages: data.totalHits };
   } catch (error) {
-    console.log('something went wrong', error);
+    throw error;
+    // console.log('something went wrong', error);
   }
 };

@@ -20,7 +20,7 @@ export default class App extends Component {
   };
 
   componentDidMount() {
-    this.fetchImages();
+    // this.fetchImages();
   }
 
   componentDidUpdate(_, prevState) {
@@ -78,10 +78,11 @@ export default class App extends Component {
   };
 
   render() {
-    const { images, loading, totalImages, showModalWindow } = this.state;
+    const { images, loading, totalImages, showModalWindow, error } = this.state;
     return (
       <div>
         <Searchbar onSubmit={this.onHandleSubmit} />
+        {error && <p style={{ color: 'red' }}>{error}</p>}
         <ImageGallery images={images} openModalWindow={this.openModalWindow} />
         {loading && <Loader />}
         {totalImages !== images.length && !loading && (
