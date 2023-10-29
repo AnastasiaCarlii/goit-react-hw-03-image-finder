@@ -6,6 +6,7 @@ import Searchbar from './Searchbar/Searchbar';
 import ImageGallery from './ImageGallery/ImageGallery';
 import { Loader } from './Loader/Loader';
 import Button from './Button/Button';
+import Modal from './Modal/Modal';
 
 export default class App extends Component {
   state = {
@@ -72,8 +73,12 @@ export default class App extends Component {
     this.setState({ showModalWindow: largeImageURL });
   };
 
+  handleCloseModalWindow = () => {
+    this.setState({ showModalWindow: '' });
+  };
+
   render() {
-    const { images, loading, totalImages } = this.state;
+    const { images, loading, totalImages, showModalWindow } = this.state;
     return (
       <div>
         <Searchbar onSubmit={this.onHandleSubmit} />
@@ -81,6 +86,13 @@ export default class App extends Component {
         {loading && <Loader />}
         {totalImages !== images.length && !loading && (
           <Button onClick={this.handleLoadMore} />
+        )}
+
+        {showModalWindow && (
+          <Modal
+            showModalWindow={showModalWindow}
+            onClose={this.handleCloseModalWindow}
+          />
         )}
       </div>
     );
