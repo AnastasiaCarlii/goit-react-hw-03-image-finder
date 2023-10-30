@@ -15,7 +15,7 @@ const ImageGalleryItem = ({
         src={webformatURL}
         alt={tags}
         onClick={() => {
-          openModalWindow(largeImageURL);
+          openModalWindow(largeImageURL, tags);
         }}
       />
     </div>

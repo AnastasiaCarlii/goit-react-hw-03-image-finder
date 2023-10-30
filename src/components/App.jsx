@@ -6,7 +6,8 @@ import Searchbar from './Searchbar/Searchbar';
 import ImageGallery from './ImageGallery/ImageGallery';
 import { Loader } from './Loader/Loader';
 import Button from './Button/Button';
-import Modal from './Modal/Modal';
+
+import MyModal from './Modal/MyModal';
 
 export default class App extends Component {
   state = {
@@ -14,43 +15,36 @@ export default class App extends Component {
     page: 1,
     images: [],
     totalImages: 0,
-    showModalWindow: false,
+    showModal: false,
+    largeImageURL: '',
+    tags: '',
     loading: false,
+    error: null,
   };
-
-  componentDidMount() {
-    // this.fetchImages();
-  }
 
   componentDidUpdate(_, prevState) {
     const { query, page } = this.state;
     if (prevState.query !== query || prevState.page !== page) {
-      this.setState({ loading: true }, this.fetchImages);
+      this.fetchImages(query, page);
     }
   }
 
-  fetchImages = () => {
-    const { query, page } = this.state;
-
-    getImages(query, page)
-      .then(response => {
-        this.setState(prevState => {
-          const uniqueImages = response.images.filter(
-            newImage =>
-              !prevState.images.some(image => image.id === newImage.id)
-          );
-
-          return {
-            images: [...prevState.images, ...uniqueImages],
-            totalImages: response.totalImages,
-            loading: false,
-          };
-        });
-      })
-      .catch(error => {
-        console.error('Something went wrong', error);
-        this.setState({ error: error.message, loading: false });
-      });
+  fetchImages = async (query, page) => {
+    try {
+      this.setState({ loading: true });
+      const { hits, totalHits } = await getImages(query, page);
+      if (hits.length === 0) {
+        return alert('we dont find any images');
+      }
+      this.setState(prevState => ({
+        images: [...prevState.images, ...hits],
+        totalImages: totalHits,
+      }));
+    } catch (error) {
+      this.setState({ error: error.message });
+    } finally {
+      this.setState({ loading: false });
+    }
   };
 
   onHandleSubmit = value => {
@@ -58,7 +52,6 @@ export default class App extends Component {
       query: value,
       page: 1,
       images: [],
-      totalImages: 0,
     });
   };
 
@@ -68,32 +61,47 @@ export default class App extends Component {
     }));
   };
 
-  openModalWindow = largeImageURL => {
-    this.setState({ showModalWindow: largeImageURL });
+  openModalWindow = (largeImageURL, tags) => {
+    this.setState({ showModal: true, largeImageURL, tags });
   };
 
   handleCloseModalWindow = () => {
-    this.setState({ showModalWindow: '' });
+    this.setState({ showModal: false, largeImageURL: '', tags: '' });
   };
 
   render() {
-    const { images, loading, totalImages, showModalWindow, error } = this.state;
+    const {
+      images,
+      loading,
+      totalImages,
+      showModal,
+      largeImageURL,
+      tags,
+      error,
+    } = this.state;
+    const allPage = totalImages / images.length;
     return (
       <div>
         <Searchbar onSubmit={this.onHandleSubmit} />
-        {error && <p style={{ color: 'red' }}>{error}</p>}
-        <ImageGallery images={images} openModalWindow={this.openModalWindow} />
         {loading && <Loader />}
-        {totalImages !== images.length && !loading && (
+        {error && <p style={{ color: 'red' }}>something went wrong</p>}
+        {images.length !== 0 && (
+          <ImageGallery
+            images={images}
+            openModalWindow={this.openModalWindow}
+          />
+        )}
+
+        {allPage > 1 && !loading && images.length > 0 && (
           <Button onClick={this.handleLoadMore} />
         )}
 
-        {showModalWindow && (
-          <Modal
-            showModalWindow={showModalWindow}
-            onClose={this.handleCloseModalWindow}
-          />
-        )}
+        <MyModal
+          largeImageURL={largeImageURL}
+          tags={tags}
+          modalIsOpen={showModal}
+          closeModal={this.handleCloseModalWindow}
+        />
       </div>
     );
   }
